@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bom Pastor HORTIFRUTI</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f3f3f3; }
+    header { background: #a0c4d3; padding: 20px; text-align: center; }
+    .container { max-width: 100%; margin: auto; padding: 10px; }
+    /*.categorias-botoes {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 10px;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .categorias-botoes::-webkit-scrollbar { display: none; }
+    .categoria-btn {
+      flex: 0 0 auto;
+      background: #4caf50;
+      color: white;
+      border: none;
+      padding: 8px 20px;
+      font-size: 14px;
+      border-radius: 5px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background-color 0.3s;
+      min-width: 80px;
+      user-select: none;
+    }
+    .categoria-btn:hover:not(.ativo) { background-color: #45a049; }
+    .categoria-btn.ativo {
+      background-color: #2e7d32;
+      box-shadow: 0 0 10px #2e7d32;
+    }*/
+    #barraPesquisa {
+      width: 100%;
+      padding: 8px 12px;
+      margin-bottom: 15px;
+      font-size: 14px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+    .produtos-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      justify-items: center;
+    }
+    .card {
+      background: white;
+      border-radius: 10px;
+      padding: 12px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      text-align: center;
+      max-width: 120px;
+      width: 100%;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .card img {
+      max-width: 100px;
+      height: auto;
+      border-radius: 12px;
+      margin-bottom: 6px;
+    }
+    .unidade-indicador {
+      font-size: 0.9em;
+      color: #4caf50;
+      font-weight: bold;
+      margin-bottom: 4px;
+      margin-top: -1px;
+      display: block;
+    }
+    button.adicionar-btn {
+      padding: 6px 10px;
+      background: #4caf50;
+      border: none;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.3s;
+      user-select: none;
+      margin-top: 6px;
+    }
+    button.adicionar-btn:hover:not(:disabled) { background-color: #45a049; }
+    button.adicionar-btn:disabled { background-color: #2e7d32; cursor: default; }
+    /* Carrinho */
+    #carrinho {
+      display: none;
+      position: fixed;
+      right: 5px;
+      left: 10px;
+      bottom: 70px;
+      width: 90vw;
+      max-width: auto;
+      max-height: 70vh;
+      background: white;
+      padding: 10px 15px;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      overflow-y: auto;
+      z-index: 1000;
+      font-size: 14px;
+    }
+    #carrinho table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    #carrinho th, #carrinho td {
+      padding: 6px;
+      border-bottom: 1px solid #ddd;
+    }
+    #whatsappBtn {
+      margin-top: 15px;
+      width: 100%;
+      font-size: 16px;
+      padding: 12px 8px;
+      cursor: pointer;
+      border: none;
+      background-color: #4caf50;
+      color: white;
+      border-radius: 6px;
+      user-select: none;
+    }
+    #botaoCarrinho {
+      position: fixed;
+      top: 15px;
+      right: 35px;
+      background: #07f155;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      font-size: 26px;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      z-index: 1100;
+      user-select: none;
+    }
+    #contadorBotaoCarrinho {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      background: #e74c3c;
+      color: white;
+      font-size: 12px;
+      font-weight: bold;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      pointer-events: none;
+      display: none;
+    }
+    #enderecoEntrega {
+      margin-top: 15px;
+      text-align: left;
+      font-size: 14px;
+    }
+    #enderecoEntrega label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 3px;
+    }
+    #enderecoEntrega input {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 8px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      box-sizing: border-box;
+      display: block;
+    }
+    #fecharCarrinhoBtn {
+      background: #e74c3c;
+      border: none;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      float: right;
+      margin-bottom: 10px;
+      user-select: none;
+    }
+    #contadorProdutos {
+      font-weight: bold;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <img src="LOGO DISK ÁGUA DA SERRA.png" alt="Logo do Bom Pastor Hortifruti" style="max-width:250px; width:100%; display:block; margin:0 auto 10px auto; border-radius:12px;">
+</header>
+<div class="container">
+<!--botões categoria
+  <div class="categorias-botoes">
+    <button class="categoria-btn ativo" data-categoria="legumes">Legumes</button>
+    <button class="categoria-btn" data-categoria="vegetais">Vegetais</button>
+    <button class="categoria-btn" data-categoria="frutas">Frutas</button>
+  </div>
+-->
+  <div>
+
+<input type="text" id="barraPesquisa" placeholder="Buscar produto..." autocomplete="">
+
+  <div class="produtos-grid" id="produtosGrid"></div>
+</div>
+
+<!-- Botão fixo para abrir o carrinho -->
+<button id="botaoCarrinho" title="Ver carrinho">🛒
+  <div id="contadorBotaoCarrinho">0</div>
+</button>
+
+<!-- Painel do carrinho -->
+<div id="carrinho" aria-hidden="true" aria-label="Carrinho de compras">
+  <button id="fecharCarrinhoBtn" aria-label="Fechar carrinho">X</button>
+  <h2>Carrinho</h2>
+  <div id="contadorProdutos">Itens no carrinho: 0</div>
+  <table id="listaCarrinho">
+    <thead>
+      <tr>
+        <th style="text-align:left;">Item</th>
+        <th style="text-align:center;">Quantidade</th>
+        <th style="text-align:center;">Ação</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <div id="enderecoEntrega">
+    <h3>Endereço de Entrega</h3>
+    <label for="inputNome">Nome:</label>
+    <input type="text" id="inputNome" placeholder="Nome completo">
+    <label for="inputTelefone">Telefone:</label>
+    <input type="text" id="inputTelefone" placeholder="(XX) XXXXX-XXXX">
+    <label for="inputEndereco">Endereço:</label>
+    <input type="text" id="inputEndereco" placeholder="Rua, avenida, etc.">
+    <label for="inputNumero">Número:</label>
+    <input type="text" id="inputNumero" placeholder="Número">
+    <label for="inputBairro">Bairro:</label>
+    <input type="text" id="inputBairro" placeholder="Bairro">
+  </div>
+  <button id="whatsappBtn">Enviar pedido para o WhatsApp</button>
+</div>
+
+<footer style="text-align: center; padding: 15px 0; font-size: 12px; color: #555;">
+  <img src="logo-empresa.png" alt="Logo" style="max-height: 25px; display: block; margin: 0 auto 10px auto;">
+  <div>
+    Criado por ImpactUP 
+  </div>
+<div>
+     <a href="https://www.impactup.com.br" target="_blank" style="font-size: 12px;color: #4caf50;">www.impactup.com.br</a>
+  </div>
+
+</footer>
+
+<script>
+const produtos = [
+  { nome: "Água mineral 20L", preco: 4.20, imagem: "aguamnineral20l.png", categoria: "legumes", vendidoPorPeso: true, unidade: "Un" },
+  { nome: "Água mineral C/Gás 500L", preco: 5.20, imagem: "aguac-guas500ml.png", categoria: "legumes", vendidoPorPeso: true, unidade: "Un" },
+  { nome: "Água mineral S/Gás 500L", preco: 3.80, imagem: "agua-s-guas500ml.png", categoria: "legumes", vendidoPorPeso: true, unidade: "Un" }
+
+];
+
+const produtosGrid = document.getElementById('produtosGrid');
+const listaCarrinho = document.querySelector('#listaCarrinho tbody');
+const whatsappBtn = document.getElementById('whatsappBtn');
+const botaoCarrinho = document.getElementById('botaoCarrinho');
+const carrinhoDiv = document.getElementById('carrinho');
+const fecharCarrinhoBtn = document.getElementById('fecharCarrinhoBtn');
+const contadorProdutos = document.getElementById('contadorProdutos');
+const contadorBotaoCarrinho = document.getElementById('contadorBotaoCarrinho');
+const categoriasBotoes = document.querySelectorAll('.categoria-btn');
+const barraPesquisa = document.getElementById('barraPesquisa');
+
+let carrinho = {};
+let categoriaSelecionada = 'legumes';
+let termoPesquisa = '';
+
+function renderProdutos() {
+  produtosGrid.innerHTML = '';
+  const produtosFiltrados = produtos.filter(p => p.categoria === categoriaSelecionada && p.nome.toLowerCase().includes(termoPesquisa.toLowerCase()));
+  produtosFiltrados.forEach((p, index) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <img src="${p.imagem}" alt="${p.nome}" loading="lazy" />
+      <h3>${p.nome}</h3>
+      <span class="unidade-indicador">${p.unidade}</span>
+      <button class="adicionar-btn" id="btn-add-${index}">Adicionar</button>
+    `;
+    produtosGrid.appendChild(card);
+
+    const botaoAdicionar = card.querySelector('button');
+    botaoAdicionar.addEventListener('click', () => addCarrinhoComFeedback(p, botaoAdicionar));
+  });
+}
+
+function addCarrinhoComFeedback(produto, botao) {
+  adicionarProdutoNoCarrinho(produto);
+  botao.disabled = true;
+  const textoOriginal = botao.textContent;
+  botao.textContent = 'Adicionado ✔';
+  botao.style.backgroundColor = '#2e7d32';
+  setTimeout(() => {
+    botao.textContent = textoOriginal;
+    botao.style.backgroundColor = '#4caf50';
+    botao.disabled = false;
+  }, 1500);
+}
+
+function adicionarProdutoNoCarrinho(produto) {
+  if (carrinho[produto.nome]) {
+    carrinho[produto.nome].quantidade++;
+  } else {
+    carrinho[produto.nome] = { ...produto, quantidade: 1 };
+  }
+  atualizarCarrinho();
+}
+
+function alterarQuantidade(nome, delta) {
+  if (carrinho[nome]) {
+    const novaQtd = carrinho[nome].quantidade + delta;
+    if (novaQtd >= 1) {
+      carrinho[nome].quantidade = novaQtd;
+      atualizarCarrinho();
+    }
+  }
+}
+
+function removerItem(nome) {
+  if (carrinho[nome]) {
+    delete carrinho[nome];
+    atualizarCarrinho();
+  }
+}
+
+function atualizarCarrinho() {
+  listaCarrinho.innerHTML = '';
+  let totalItens = 0;
+  Object.values(carrinho).forEach(item => {
+    totalItens += item.quantidade;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${item.nome} (${item.unidade})</td>
+      <td>
+        <div class="quantidade-container">
+          <button onclick="alterarQuantidade('${item.nome}', -1)">−</button>
+          <span>${item.quantidade}</span>
+          <button onclick="alterarQuantidade('${item.nome}', 1)">+</button>
+        </div>
+      </td>
+      <td>
+        <button onclick="removerItem('${item.nome}')" style="padding:5px 8px;font-size:12px;background:#e74c3c;color:white;border:none;border-radius:5px;cursor:pointer;">X</button>
+      </td>
+    `;
+    listaCarrinho.appendChild(tr);
+  });
+  contadorProdutos.textContent = `Itens no carrinho: ${totalItens}`;
+  contadorBotaoCarrinho.textContent = totalItens;
+  contadorBotaoCarrinho.style.display = totalItens > 0 ? 'flex' : 'none';
+}
+
+categoriasBotoes.forEach(botao => {
+  botao.addEventListener('click', () => {
+    categoriasBotoes.forEach(b => b.classList.remove('ativo'));
+    botao.classList.add('ativo');
+    categoriaSelecionada = botao.dataset.categoria;
+    termoPesquisa = '';
+    barraPesquisa.value = '';
+    renderProdutos();
+  });
+});
+
+barraPesquisa.addEventListener('input', () => {
+  termoPesquisa = barraPesquisa.value;
+  renderProdutos();
+});
+
+botaoCarrinho.addEventListener('click', () => {
+  if (carrinhoDiv.style.display === 'none' || !carrinhoDiv.style.display) {
+    carrinhoDiv.style.display = 'block';
+    carrinhoDiv.setAttribute('aria-hidden', 'false');
+  } else {
+    carrinhoDiv.style.display = 'none';
+    carrinhoDiv.setAttribute('aria-hidden', 'true');
+  }
+});
+
+fecharCarrinhoBtn.addEventListener('click', () => {
+  carrinhoDiv.style.display = 'none';
+  carrinhoDiv.setAttribute('aria-hidden', 'true');
+});
+
+whatsappBtn.addEventListener('click', () => {
+  if (Object.keys(carrinho).length === 0) {
+    alert('Carrinho está vazio!');
+    return;
+  }
+  const nome = document.getElementById('inputNome').value.trim();
+  const telefone = document.getElementById('inputNome').value.trim();
+  const endereco = document.getElementById('inputEndereco').value.trim();
+  const numero = document.getElementById('inputNumero').value.trim();
+  const bairro = document.getElementById('inputBairro').value.trim();
+
+  if (!endereco || !numero || !bairro) {
+    alert('Por favor, preencha o endereço, número e bairro para entrega.');
+    return;
+  }
+
+  let mensagem = 'Olá, gostaria de fazer um pedido:\n\n';
+  Object.values(carrinho).forEach(item => {
+    mensagem += `- ${item.nome} (${item.unidade}) (x${item.quantidade})\n`;
+  });
+  mensagem += `Nome: ${nome}\nTelefone: ${telefone}\nRua/Avenida: ${endereco}\nNúmero: ${numero}\nBairro: ${bairro}`;
+
+  const phoneNumber = '5522992905633';
+  const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(mensagem)}`;
+  window.open(url, '_blank');
+});
+
+// Inicializa com produtos da categoria legumes
+renderProdutos();
+</script>
+</body>
+</html>
